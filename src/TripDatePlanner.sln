@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripDatePlanner", "TripDatePlanner\TripDatePlanner.csproj", "{64ADA68A-DD5E-4241-92E7-78BE2E9C79BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripDatePlanner.Test", "TripDatePlanner.Test\TripDatePlanner.Test.csproj", "{93A9B8C7-2394-4624-8513-F9EC61D3281F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripDatePlanner.Benchmarks", "TripDatePlanner.Benchmarks\TripDatePlanner.Benchmarks.csproj", "{B3B51E3C-61B1-41B6-9B2C-B84284D23016}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{64ADA68A-DD5E-4241-92E7-78BE2E9C79BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64ADA68A-DD5E-4241-92E7-78BE2E9C79BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64ADA68A-DD5E-4241-92E7-78BE2E9C79BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93A9B8C7-2394-4624-8513-F9EC61D3281F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93A9B8C7-2394-4624-8513-F9EC61D3281F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93A9B8C7-2394-4624-8513-F9EC61D3281F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93A9B8C7-2394-4624-8513-F9EC61D3281F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3B51E3C-61B1-41B6-9B2C-B84284D23016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3B51E3C-61B1-41B6-9B2C-B84284D23016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3B51E3C-61B1-41B6-9B2C-B84284D23016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3B51E3C-61B1-41B6-9B2C-B84284D23016}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

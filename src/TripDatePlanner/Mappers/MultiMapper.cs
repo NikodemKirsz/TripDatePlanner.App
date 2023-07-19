@@ -1,7 +1,7 @@
 ﻿using Riok.Mapperly.Abstractions;
 using TripDatePlanner.Entities;
 using TripDatePlanner.Mappers.Interfaces;
-using TripDatePlanner.Models.DateRange;
+using TripDatePlanner.Models;
 using TripDatePlanner.Models.Dto;
 using Range = TripDatePlanner.Entities.Range;
 
@@ -11,29 +11,20 @@ namespace TripDatePlanner.Mappers;
 public sealed partial class MultiMapper :
     IMapper<TripPostDto, Trip>,
     IMapper<ParticipantPostDto, Participant>,
-    IMapper<RangePostDto, Range>
+    IMapper<RangePostDto, Range>,
+    IMapper<ParticipantWithRangesPostDto, Participant>
 {
-    public Trip Map(TripPostDto postDto)
-    {
-        return new Trip()
-        {
-            Name = postDto.Name,
-            Password = postDto.Password,
-            AllowedRange = new(postDto.AllowedRangeStart, postDto.AllowedRangeEnd),
-            MinDays = postDto.MinDays,
-            MaxDays = postDto.MaxDays,
-        };
-    }
+    public partial Trip Map(TripPostDto postDto);
 
     public partial Participant Map(ParticipantPostDto postDto);
-    
-    public Range Map(RangePostDto postDto)
+
+    public partial Range Map(RangePostDto postDto);
+
+    public Participant Map(ParticipantWithRangesPostDto postDto)
     {
-        return new Range()
-        {
-            DateRange = new(postDto.DateRangeStart, postDto.DateRangeEnd),
-            RangeType = postDto.RangeType,
-            ParticipantId = postDto.ParticipantId,
-        };
+        Participant participant = Map((ParticipantPostDto)postDto);
+        participant.Ranges = postDto.RangesPostDto.Select(Map).ToArray();
+
+        return participant;
     }
 }

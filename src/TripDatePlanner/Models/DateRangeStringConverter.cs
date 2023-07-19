@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace TripDatePlanner.Models.DateRange;
+namespace TripDatePlanner.Models;
 
 public sealed class DateRangeStringConverter : ValueConverter<DateRange, string>
 {

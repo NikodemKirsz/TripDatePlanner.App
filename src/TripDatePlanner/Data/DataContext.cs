@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using TripDatePlanner.Entities;
-using TripDatePlanner.Models.DateRange;
+using TripDatePlanner.Models;
 using Range = TripDatePlanner.Entities.Range;
 
 namespace TripDatePlanner.Data;

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Data;
+using System.Data.Common;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage;
 using TripDatePlanner.Entities.Interfaces;
 using TripDatePlanner.Mappers.Interfaces;
 using TripDatePlanner.Services.Interfaces;
@@ -24,7 +27,7 @@ public abstract class CrudController<TId, TEntity, TEntityPost> : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken token = default)
+    public virtual async Task<IActionResult> GetAll(CancellationToken token = default)
     {
         TEntity[] entities = await _entityService.GetAll(token);
         
@@ -32,7 +35,7 @@ public abstract class CrudController<TId, TEntity, TEntityPost> : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(TId id, [FromQuery] bool full = false, CancellationToken token = default)
+    public virtual async Task<IActionResult> Get(TId id, [FromQuery] bool full = false, CancellationToken token = default)
     {
         TEntity? entity = await _entityService.Get(id, full, token: token);
         
@@ -40,7 +43,7 @@ public abstract class CrudController<TId, TEntity, TEntityPost> : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] TEntityPost entityPost, CancellationToken token = default)
+    public virtual async Task<IActionResult> Create([FromBody] TEntityPost entityPost, CancellationToken token = default)
     {
         TEntity entity = _entityMapper.Map(entityPost);
         TEntity createdEntity = await _entityService.Create(entity, token: token);
@@ -49,7 +52,7 @@ public abstract class CrudController<TId, TEntity, TEntityPost> : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(TId id, [FromBody] TEntityPost entityPost, CancellationToken token = default)
+    public virtual async Task<IActionResult> Update(TId id, [FromBody] TEntityPost entityPost, CancellationToken token = default)
     {
         TEntity entity = _entityMapper.Map(entityPost);
         TEntity? updatedEntity = await _entityService.Update(id, entity, token: token);
@@ -58,10 +61,26 @@ public abstract class CrudController<TId, TEntity, TEntityPost> : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Remove(TId id, CancellationToken token = default)
+    public virtual async Task<IActionResult> Remove(TId id, CancellationToken token = default)
     {
         TEntity removedEntity = await _entityService.Remove(id, token: token);
         
         return Ok(removedEntity);
     }
+    
+    protected int SaveChanges() => _entityService.SaveChanges();
+    
+    protected Task<int> SaveChangesAsync(CancellationToken token = default) => _entityService.SaveChangesAsync(token);
+    
+    protected IDbContextTransaction BeginTransaction() => _entityService.BeginTransaction();
+
+    protected Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken token = default) => _entityService.BeginTransactionAsync(token);
+
+    protected void CommitTransaction() => _entityService.CommitTransaction();
+    
+    protected Task CommitTransactionAsync(CancellationToken token = default) => _entityService.CommitTransactionAsync(token);
+
+    protected void RollbackTransaction() => _entityService.RollbackTransaction();
+    
+    protected Task RollbackTransactionAsync(CancellationToken token = default) => _entityService.RollbackTransactionAsync(token);
 }

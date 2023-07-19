@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TripDatePlanner.Entities;
 using TripDatePlanner.Mappers.Interfaces;
-using TripDatePlanner.Models.DateRange;
+using TripDatePlanner.Models;
 using TripDatePlanner.Models.Dto;
 using TripDatePlanner.Services.Interfaces;
 
@@ -29,8 +29,10 @@ public sealed class TripController : CrudController<string, Trip, TripPostDto>
     [HttpGet("[action]/{tripId}")]
     public async Task<IActionResult> Evaluate(string tripId, CancellationToken token = default)
     {
-        DateRange[] sortedRanges = 
-        {
+        DateRange[] sortedRanges = {
+            new(DateOnly.MinValue, DateOnly.MaxValue),
+            new(DateOnly.MinValue, DateOnly.MaxValue),
+            new(DateOnly.MinValue, DateOnly.MaxValue),
             new(DateOnly.MinValue, DateOnly.MaxValue),
         };
 

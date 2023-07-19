@@ -31,7 +31,7 @@ public sealed class UidGenerator<TEntity> : IUidGenerator<TEntity>
         await _semaphore.WaitAsync(token);
         
         int tries = 0;
-        while (tries <= MaxTries)
+        while (tries < MaxTries)
         {
             tries++;
             
@@ -42,7 +42,7 @@ public sealed class UidGenerator<TEntity> : IUidGenerator<TEntity>
                 continue;
             
             _logger.LogInformation(
-                "Successfully generated Uid for {Type} table (took {Tries} tries)", 
+                "Successfully generated Uid for {Type} table (tries: {Tries})", 
                 _entitySet.EntityType.Name,
                 tries
             );

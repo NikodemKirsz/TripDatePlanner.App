@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using TripDatePlanner.Data;
 using TripDatePlanner.Entities.Interfaces;
 using TripDatePlanner.Exceptions;
@@ -27,7 +28,7 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
         return await _dbSet.ToArrayAsync(token);
     }
 
-    public async Task<TEntity?> Get(TId id, bool full = false, CancellationToken token = default)
+    public virtual async Task<TEntity?> Get(TId id, bool full = false, CancellationToken token = default)
     {
         TEntity? entity = full
             ? await IncludeDependencies(_dbSet).FirstOrDefaultAsync(e => id.Equals(e.Id), cancellationToken: token)
@@ -36,13 +37,22 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
         return entity ?? throw new EntityNotFoundException(typeof(TEntity), nameof(id), id);
     }
 
-    public async Task<TEntity> Create(TEntity entity, bool save = true, CancellationToken token = default)
+    public virtual async Task<TEntity> Create(TEntity entity, bool save = true, CancellationToken token = default)
     {
         EntityEntry<TEntity> entityEntry = await _dbSet.AddAsync(entity, token);
 
-        if (save) await _context.SaveChangesAsync(token);
+        if (save)
+            await SaveChangesAsync(token);
 
         return entityEntry.Entity;
+    }
+    
+    public virtual async Task CreateRange(ICollection<TEntity> entities, bool save = true, CancellationToken token = default)
+    {
+        await _dbSet.AddRangeAsync(entities, token);
+
+        if (save)
+            await SaveChangesAsync(token);
     }
 
     public virtual async Task<TEntity?> Update(TId id, Action<TEntity> update, bool save = true, CancellationToken token = default)
@@ -62,7 +72,8 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
         EntityEntry<TEntity>? entityEntry = null;
 
         await Task.Run(() => entityEntry = _dbSet.Update(newEntity), token);
-        if (save) await _context.SaveChangesAsync(token);
+        if (save)
+            await SaveChangesAsync(token);
 
         return entityEntry?.Entity;
     }
@@ -74,15 +85,27 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
         _dbSet.Attach(entity);
         EntityEntry<TEntity> entityEntry = _dbSet.Remove(entity);
 
-        if (save) await _context.SaveChangesAsync(token);
+        if (save)
+            await SaveChangesAsync(token);
 
         return entityEntry.Entity;
     }
 
-    public virtual async Task<int> SaveChanges()
-    {
-        return await _context.SaveChangesAsync();
-    }
+    public int SaveChanges() => _context.SaveChanges();
+    
+    public Task<int> SaveChangesAsync(CancellationToken token = default) => _context.SaveChangesAsync(token);
+
+    public IDbContextTransaction BeginTransaction() => _context.Database.BeginTransaction();
+    
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken token = default) => _context.Database.BeginTransactionAsync(token);
+
+    public void CommitTransaction() => _context.Database.CommitTransaction();
+    
+    public Task CommitTransactionAsync(CancellationToken token = default) => _context.Database.CommitTransactionAsync(token);
+
+    public void RollbackTransaction() => _context.Database.RollbackTransaction();
+    
+    public Task RollbackTransactionAsync(CancellationToken token = default) => _context.Database.RollbackTransactionAsync(token);
 
     protected abstract IQueryable<TEntity> IncludeDependencies(IQueryable<TEntity> query);
 }

@@ -1,6 +1,5 @@
 ﻿using TripDatePlanner.Entities.Interfaces;
 using TripDatePlanner.Models;
-using TripDatePlanner.Models.DateRange;
 
 namespace TripDatePlanner.Entities;
 
