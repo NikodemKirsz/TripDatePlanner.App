@@ -15,10 +15,10 @@ namespace TripDatePlanner.Migrations
                 name: "Trips",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    Password = table.Column<string>(type: "longtext", nullable: true),
-                    AllowedRange = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    Passcode = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true),
+                    AllowedRange = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
                     MinDays = table.Column<int>(type: "int", nullable: false),
                     MaxDays = table.Column<int>(type: "int", nullable: false)
                 },
@@ -34,8 +34,8 @@ namespace TripDatePlanner.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
-                    TripId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Name = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    TripId = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,7 +55,7 @@ namespace TripDatePlanner.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    DateRange = table.Column<string>(type: "longtext", nullable: false),
+                    DateRange = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
                     RangeType = table.Column<int>(type: "int", nullable: false),
                     ParticipantId = table.Column<int>(type: "int", nullable: false)
                 },

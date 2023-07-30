@@ -23,7 +23,12 @@ services.AddMappers();
 services.AddCors();
 services.AddDateOnlyTimeOnlyStringConverters();
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(o => o.UseDateOnlyTimeOnlyStringConverters());
+services.AddSwaggerGen(options =>
+{
+    options
+        .UseDateRangeStringConverter()
+        .UseDateOnlyTimeOnlyStringConverters();
+});
 services.AddHealthChecks();
 
 var app = builder.Build();
@@ -39,10 +44,11 @@ app.UseCors(options =>
         .AllowAnyHeader();
 });
 
+app.UseHsts();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Hello Pal!");
 
 app.Run();

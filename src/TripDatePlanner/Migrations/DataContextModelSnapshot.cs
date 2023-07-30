@@ -27,11 +27,13 @@ namespace TripDatePlanner.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("TripId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.HasKey("Id");
 
@@ -48,7 +50,8 @@ namespace TripDatePlanner.Migrations
 
                     b.Property<string>("DateRange")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<int>("ParticipantId")
                         .HasColumnType("int");
@@ -66,11 +69,13 @@ namespace TripDatePlanner.Migrations
             modelBuilder.Entity("TripDatePlanner.Entities.Trip", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<string>("AllowedRange")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<int>("MaxDays")
                         .HasColumnType("int");
@@ -80,10 +85,12 @@ namespace TripDatePlanner.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("longtext");
+                    b.Property<string>("Passcode")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.HasKey("Id");
 

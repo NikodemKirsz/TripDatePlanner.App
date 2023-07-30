@@ -1,6 +1,7 @@
 ﻿namespace TripDatePlanner.Models.Dto;
 
-public sealed class ParticipantWithRangesPostDto : ParticipantPostDto
+public sealed record ParticipantWithRangesPostDto : ParticipantPostDto
 {
-    public RangePostDto[] RangesPostDto { get; set; } = Array.Empty<RangePostDto>();
+    public DateRange[] PreferredRanges { get; set; } = Array.Empty<DateRange>();
+    public DateRange[] RejectedRanges { get; set; } = Array.Empty<DateRange>();
 }

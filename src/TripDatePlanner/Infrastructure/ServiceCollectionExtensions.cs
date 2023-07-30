@@ -22,9 +22,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMappers(this IServiceCollection services)
     {
-        services.AddSingleton<IMapper<TripPostDto, Trip>, MultiMapper>();
-        services.AddSingleton<IMapper<ParticipantPostDto, Participant>, MultiMapper>();
-        services.AddSingleton<IMapper<RangePostDto, Range>, MultiMapper>();
+        Type multiMapperType = typeof(MultiMapper);
+        foreach (Type interfaceType in multiMapperType.GetInterfaces())
+        {
+            services.AddSingleton(interfaceType, multiMapperType);
+        }
 
         return services;
     }

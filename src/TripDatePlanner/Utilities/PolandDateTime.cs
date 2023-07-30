@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace TripDatePlanner.Helpers;
+namespace TripDatePlanner.Utilities;
 
 public static class PolandDateTime
 {

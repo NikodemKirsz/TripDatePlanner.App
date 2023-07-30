@@ -4,19 +4,20 @@ namespace TripDatePlanner.Exceptions;
 
 public class TripDatePlannerException : Exception
 {
+    private const string MessageTemplate = $$"""{{Consts.AppName}} Exception!""";
+    
     public TripDatePlannerException()
+        : this(null)
     {
     }
 
-    protected TripDatePlannerException(SerializationInfo info, StreamingContext context) : base(info, context)
+    public TripDatePlannerException(string? message)
+        : this(message, null)
     {
     }
 
-    public TripDatePlannerException(string? message) : base(message)
-    {
-    }
-
-    public TripDatePlannerException(string? message, Exception? innerException) : base(message, innerException)
+    public TripDatePlannerException(string? message, Exception? innerException)
+        : base(String.Join(' ', MessageTemplate, message), innerException)
     {
     }
 }

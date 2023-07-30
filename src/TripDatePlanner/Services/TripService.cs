@@ -21,6 +21,8 @@ public sealed class TripService : CrudService<Trip, string>, ITripService
 
     public new async Task<Trip> Create(Trip entity, bool save = true, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
+
         string uid = await _uidGenerator.Generate(token);
 
         entity.Id = uid;

@@ -1,10 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using TripDatePlanner.Exceptions;
-using TripDatePlanner.Helpers.Extensions;
+using TripDatePlanner.Utilities.Extensions;
 
 namespace TripDatePlanner.Models;
 
 [Serializable]
+[TypeConverter(typeof(DateRangeJsonConverter))]
 public readonly struct DateRange : IEquatable<DateRange>
 {
     private const string DateOnlyFormat = "yyyy-MM-dd";
@@ -12,6 +15,7 @@ public readonly struct DateRange : IEquatable<DateRange>
     
     public DateOnly Start { get; }
     public DateOnly End { get; }
+    public int Length => End.DayNumber - Start.DayNumber + 1;
 
     public DateRange(DateOnly start, DateOnly end)
     {
@@ -20,35 +24,6 @@ public readonly struct DateRange : IEquatable<DateRange>
 
         Start = start;
         End = end;
-    }
-
-    public static DateRange Parse(string dateRangeStr) => ParseExact(dateRangeStr, null);
-
-    public static DateRange ParseExact(string dateRangeStr, [StringSyntax("DateOnlyFormat")] string? dateOnlyFormat)
-    {
-        try
-        {
-            string[] splits = dateRangeStr.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
-            if (splits.Length != 2)
-                throw new ParsingException(dateRangeStr, typeof(DateRange));
-
-            DateOnly start = dateOnlyFormat is not null
-                ? DateOnly.ParseExact(splits[0], dateOnlyFormat)
-                : DateOnly.Parse(splits[0]);
-            DateOnly end = dateOnlyFormat is not null
-                ? DateOnly.ParseExact(splits[1], dateOnlyFormat)
-                : DateOnly.Parse(splits[1]);
-
-            return new DateRange(start, end);
-        }
-        catch (ParsingException)
-        {
-            throw;
-        }
-        catch (Exception e)
-        {
-            throw new ParsingException(dateRangeStr, typeof(DateRange), e);
-        }
     }
 
     public bool Contains(DateRange inner) => DoRangeContain(this, inner);
@@ -60,17 +35,29 @@ public readonly struct DateRange : IEquatable<DateRange>
     public bool Overlaps(DateRange other) => DoRangesOverlap(this, other);
 
     public bool IsMergable(DateRange other) => AreRangesMergable(this, other);
-    
-    public static DateRange[] Normalize(IEnumerable<DateRange> ranges)
+
+    /*public DateRange[]? Except(DateRange other)
+    {
+        
+    }*/
+
+    public DateRange[] Except(IEnumerable<DateRange> ranges)
+    {
+        List<DateRange> normalizedRanges = Normalize(ranges);
+        
+        
+        
+        return Array.Empty<DateRange>();
+    }
+
+    public static List<DateRange> Normalize(IEnumerable<DateRange> ranges)
     {
         DateRange[] orderedRanges = ranges.OrderBy(r => r.Start).ToArray();
-        List<DateRange> normalizedRanges = new(orderedRanges.Length);
         List<DateRange> mergableRanges = new(orderedRanges.Length);
-        
-        for (int i = 0; i < orderedRanges.Length; i++)
+        List<DateRange> normalizedRanges = new(orderedRanges.Length);
+
+        for (int j, i = 0; i < orderedRanges.Length; i++)
         {
-            int j;
-            
             mergableRanges.Clear();
             mergableRanges.Add(orderedRanges[i]);
 
@@ -82,18 +69,18 @@ public readonly struct DateRange : IEquatable<DateRange>
                 else
                     break;
             }
-            
+
             DateRange? mergedRange = Merge(mergableRanges);
             if (mergedRange is null)
                 continue;
-                    
+
             normalizedRanges.Add(mergedRange.Value);
             i = j - 1;
         }
-        
+
         normalizedRanges.Sort((left, right) => left.Start.CompareTo(right.Start));
 
-        return normalizedRanges.ToArray();
+        return normalizedRanges;
     }
 
     public static bool DoRangeContain(DateRange outer, DateRange inner)
@@ -125,8 +112,13 @@ public readonly struct DateRange : IEquatable<DateRange>
         if (!ranges.Any())
             return null;
         
-        var (minStart, maxEnd) = ranges.MinMax(r => r.Start, r => r.End);
+        (DateOnly minStart, DateOnly maxEnd) = ranges.MinMax(r => r.Start, r => r.End);
         return new DateRange(minStart, maxEnd);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is DateRange range && Equals(range);
     }
 
     public bool Equals(DateRange? other)
@@ -142,6 +134,45 @@ public readonly struct DateRange : IEquatable<DateRange>
     public override int GetHashCode()
     {
         return HashCode.Combine(Start, End);
+    }
+
+    public static DateRange Parse(string dateRangeStr) => ParseExact(dateRangeStr, null);
+
+    public static DateRange ParseExact(string dateRangeStr, [StringSyntax("DateOnlyFormat")] string? dateOnlyFormat)
+    {
+        try
+        {
+            string[] splits = dateRangeStr.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
+            if (splits.Length != 2)
+                throw new ParsingException(dateRangeStr, typeof(DateRange));
+
+            DateOnly start = dateOnlyFormat is not null
+                ? DateOnly.ParseExact(splits[0], dateOnlyFormat)
+                : DateOnly.Parse(splits[0]);
+            DateOnly end = dateOnlyFormat is not null
+                ? DateOnly.ParseExact(splits[1], dateOnlyFormat)
+                : DateOnly.Parse(splits[1]);
+
+            return new DateRange(start, end);
+        }
+        catch (ParsingException)
+        {
+            throw;
+        }
+        catch (Exception e)
+        {
+            throw new ParsingException(dateRangeStr, typeof(DateRange), e);
+        }
+    }
+
+    public static bool operator ==(DateRange left, DateRange right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(DateRange left, DateRange right)
+    {
+        return !(left == right);
     }
 
     public override string ToString() => ToString(DateOnlyFormat);

@@ -2,8 +2,8 @@
 using TripDatePlanner.Data;
 using TripDatePlanner.Entities.Interfaces;
 using TripDatePlanner.Exceptions;
-using TripDatePlanner.Helpers;
 using TripDatePlanner.Services.Interfaces;
+using TripDatePlanner.Utilities;
 
 namespace TripDatePlanner.Services;
 
@@ -23,7 +23,7 @@ public sealed class UidGenerator<TEntity> : IUidGenerator<TEntity>
     {
         _logger = logger;
         _entitySet = dataContext.Set<TEntity>()
-            ?? throw new ArgumentException($"No table exists for entity {nameof(TEntity)}", nameof(dataContext));;
+            ?? throw new ArgumentException($"No table exists for entity {nameof(TEntity)}", nameof(dataContext));
     }
 
     public async Task<string> Generate(CancellationToken token = default)
@@ -33,9 +33,11 @@ public sealed class UidGenerator<TEntity> : IUidGenerator<TEntity>
         int tries = 0;
         while (tries < MaxTries)
         {
+            token.ThrowIfCancellationRequested();
+
             tries++;
             
-            string potentialUid = UidUtils.CreateRandomId(Length);
+            string potentialUid = UidHelpers.CreateRandomId(Length);
             bool exists = await Exists(potentialUid, token);
 
             if (exists)
@@ -43,7 +45,7 @@ public sealed class UidGenerator<TEntity> : IUidGenerator<TEntity>
             
             _logger.LogInformation(
                 "Successfully generated Uid for {Type} table (tries: {Tries})", 
-                _entitySet.EntityType.Name,
+                typeof(TEntity).Name,
                 tries
             );
             

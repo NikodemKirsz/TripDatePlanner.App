@@ -25,11 +25,15 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
 
     public virtual async Task<TEntity[]> GetAll(CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
+        
         return await _dbSet.ToArrayAsync(token);
     }
 
-    public virtual async Task<TEntity?> Get(TId id, bool full = false, CancellationToken token = default)
+    public virtual async Task<TEntity> Get(TId id, bool full = false, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
+
         TEntity? entity = full
             ? await IncludeDependencies(_dbSet).FirstOrDefaultAsync(e => id.Equals(e.Id), cancellationToken: token)
             : await _dbSet.FindAsync(new object?[] { id }, cancellationToken: token);
@@ -39,6 +43,8 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
 
     public virtual async Task<TEntity> Create(TEntity entity, bool save = true, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
+
         EntityEntry<TEntity> entityEntry = await _dbSet.AddAsync(entity, token);
 
         if (save)
@@ -49,37 +55,46 @@ public abstract class CrudService<TEntity, TId> : ICrudService<TEntity, TId >
     
     public virtual async Task CreateRange(ICollection<TEntity> entities, bool save = true, CancellationToken token = default)
     {
+        if (entities.Count < 1)
+            return;
+        
+        token.ThrowIfCancellationRequested();
+
         await _dbSet.AddRangeAsync(entities, token);
 
-        if (save)
+        if (save)  
             await SaveChangesAsync(token);
     }
 
-    public virtual async Task<TEntity?> Update(TId id, Action<TEntity> update, bool save = true, CancellationToken token = default)
+    public virtual async Task<TEntity> Update(TId id, Action<TEntity> update, bool save = true, CancellationToken token = default)
     {
-        TEntity? entity = await Get(id, token: token);
-        if (entity is null)
-            return null;
+        TEntity entity = await Get(id, token: token);
         
         update(entity);
+        
+        token.ThrowIfCancellationRequested();
 
         return await Update(id, entity, token: token);
     }
 
-    public virtual async Task<TEntity?> Update(TId id, TEntity newEntity, bool save = true, CancellationToken token = default)
+    public virtual async Task<TEntity> Update(TId id, TEntity newEntity, bool save = true, CancellationToken token = default)
     {
-        newEntity.Id = id;
-        EntityEntry<TEntity>? entityEntry = null;
+        token.ThrowIfCancellationRequested();
 
+        EntityEntry<TEntity>? entityEntry = null;
+        
+        newEntity.Id = id;
         await Task.Run(() => entityEntry = _dbSet.Update(newEntity), token);
         if (save)
             await SaveChangesAsync(token);
 
-        return entityEntry?.Entity;
+        return entityEntry?.Entity ?? throw new EntityNotFoundException(typeof(TEntity), nameof(id), id);
     }
 
-    public virtual async Task<TEntity> Remove(TId id, bool save = true, CancellationToken token = default)
+    public virtual async Task<TEntity> Delete(TId id, bool save = true, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
+
         TEntity entity = new() { Id = id };
 
         _dbSet.Attach(entity);

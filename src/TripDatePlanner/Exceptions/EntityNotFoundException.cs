@@ -10,7 +10,11 @@ public sealed class EntityNotFoundException : TripDatePlannerException
     public object Value { get; }
 
     public EntityNotFoundException(Type entityType, string keyName, object value)
-        : base(String.Format(MessageTemplate, entityType.Name, keyName, value))
+        : this(entityType, keyName, value, null)
+    { }
+
+    public EntityNotFoundException(Type entityType, string keyName, object value, Exception? innerException)
+        : base(String.Format(MessageTemplate, entityType.FullName, keyName, value), innerException)
     {
         EntityType = entityType;
         KeyName = keyName;

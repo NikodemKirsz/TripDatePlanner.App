@@ -35,14 +35,14 @@ public sealed class DataContext : DbContext
         optionsBuilder.UseMySQL(mainDbConnectionString, options => 
         {
             options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            options.MigrationsAssembly(typeof(DataContext).Assembly.FullName);
+            options.MigrationsAssembly(this.GetType().Assembly.FullName);
         });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         MySQLModelBuilderExtensions.UseCollation(modelBuilder,"utf16_general_ci");
-            
+
         modelBuilder.Entity<Trip>(builder =>
         {
             builder

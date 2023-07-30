@@ -1,4 +1,4 @@
-﻿namespace TripDatePlanner.Helpers.Extensions;
+﻿namespace TripDatePlanner.Utilities.Extensions;
 
 public static class NumberExtensions
 {

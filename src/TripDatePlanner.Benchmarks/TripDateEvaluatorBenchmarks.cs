@@ -46,7 +46,7 @@ public class TripDateEvaluatorBenchmarks
     [ParamsSource(nameof(DateRangesSource))]
     public DateRange[] DateRanges = null!;
 
-    public volatile DateRange[] Results = null!;
+    public volatile List<DateRange> Results = null!;
     
     [Benchmark]
     public void NormalizeBenchmark()

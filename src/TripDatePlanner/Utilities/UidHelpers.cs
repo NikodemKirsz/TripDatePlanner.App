@@ -1,6 +1,6 @@
-﻿namespace TripDatePlanner.Helpers;
+﻿namespace TripDatePlanner.Utilities;
 
-public static class UidUtils
+public static class UidHelpers
 {
     private static readonly Random Rand = new();
     private static readonly char[] AllowedCharacters =

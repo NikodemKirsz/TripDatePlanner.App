@@ -1,4 +1,4 @@
-﻿namespace TripDatePlanner.Helpers.Extensions;
+﻿namespace TripDatePlanner.Utilities.Extensions;
 
 public static class LinqExtensions
 {
@@ -41,5 +41,22 @@ public static class LinqExtensions
         }
 
         return (min, max);
+    }
+
+    public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+    {
+        foreach (T element in source)
+        {
+            action(element);
+        }
+    }
+
+    public static IEnumerable<T> Pipe<T>(this IEnumerable<T> source, Action<T> action)
+    {
+        return source.Select(element =>
+        {
+            action(element); 
+            return element;
+        });
     }
 }
